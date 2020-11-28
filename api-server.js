@@ -41,4 +41,10 @@ app.get("/api/external", checkJwt, (req, res) => {
   });
 });
 
+app.get("/api/apprules", checkJwt, (req, res) => {
+  res.send({
+    msg: "Your access token was successfully validated for the app rules listing!"
+  });
+});
+
 app.listen(port, () => console.log(`API Server listening on port ${port}`));
