@@ -4,6 +4,7 @@ import Highlight from "../components/Highlight";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import config from "../auth_config.json";
 import Loading from "../components/Loading";
+import { useTable, useSortBy } from "react-table";
 
 const { apiOrigin = "http://localhost:3001" } = config;
 
@@ -84,6 +85,44 @@ export const AppRulesListingComponent = () => {
     fn();
   };
 
+  const data = React.useMemo(
+    () => [
+      {
+        col1: "App1",
+        col2: "Rule1",
+      },
+      {
+        col1: "App2",
+        col2: "",
+      },
+      {
+        col1: "App3",
+        col2: "Rule1, Rule2",
+      },
+    ],
+    []
+  );
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Application Name",
+        accessor: "col1", // accessor is the "key" in the data
+      },
+      {
+        Header: "Rules Applied",
+        accessor: "col2",
+      },
+    ],
+    []
+  );
+  const tableInstance = useTable({ columns, data }, useSortBy);
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = tableInstance;
   return (
     <>
       <div className="mb-5">
@@ -114,9 +153,7 @@ export const AppRulesListingComponent = () => {
         )}
 
         <h1>App Rules Listing</h1>
-        <p>
-          Show the List of Registered Apps and their associated Rules
-        </p>
+        <p>Show the List of Registered Apps and their associated Rules</p>
 
         <Button color="primary" className="mt-5" onClick={callApi}>
           Ping API
@@ -130,6 +167,60 @@ export const AppRulesListingComponent = () => {
             <Highlight>
               <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
             </Highlight>
+            {/* apply the table props */}
+            <table {...getTableProps()}>
+              <thead>
+                {
+                  // Loop over the header rows
+                  headerGroups.map((headerGroup) => (
+                    // Apply the header row props
+                    <tr {...headerGroup.getHeaderGroupProps()}>
+                      {
+                        // Loop over the headers in each row
+                        headerGroup.headers.map((column) => (
+                          // Apply the header cell props
+                          <th {...column.getHeaderProps()}>
+                            {
+                              // Render the header
+                              column.render("Header")
+                            }
+                          </th>
+                        ))
+                      }
+                    </tr>
+                  ))
+                }
+              </thead>
+              {/* Apply the table body props */}
+              <tbody {...getTableBodyProps()}>
+                {
+                  // Loop over the table rows
+                  rows.map((row) => {
+                    // Prepare the row for display
+                    prepareRow(row);
+                    return (
+                      // Apply the row props
+                      <tr {...row.getRowProps()}>
+                        {
+                          // Loop over the rows cells
+                          row.cells.map((cell) => {
+                            // Apply the cell props
+                            return (
+                              <td {...cell.getCellProps()}>
+                                {
+                                  // Render the cell contents
+                                  cell.render("Cell")
+                                }
+                              </td>
+                            );
+                          })
+                        }
+                      </tr>
+                    );
+                  })
+                }
+              </tbody>
+            </table>
           </div>
         )}
       </div>
