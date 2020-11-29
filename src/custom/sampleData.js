@@ -275,5 +275,13 @@ export const rules = [
     "name": "Whitelist for App Rules Report Query SPA",
     "order": 2,
     "stage": "login_success"
-  }
+  },
+  {
+    "id": "rul_g5o1uXlCJncQQUvJTestDuplicateRule",
+    "enabled": true,
+    "script": "function userWhitelistForSpecificApp(user, context, callback) {\n  // Access should only be granted to verified users.\n  if (!user.email || !user.email_verified) {\n    return callback(new UnauthorizedError('Access denied.'));\n  }\n\n  // only enforce for NameOfTheAppWithWhiteList\n  // bypass this rule for all other apps\n  if (context.clientID !== 'bcaUUvMTRLE4XARQAzHlOs1gUKd5YT9y') {\n    return callback(null, user, context);\n  }\n\n  const whitelist = ['testadmin@example.com', 'nissan.dookeran@gmail.com']; // authorized users\n  const userHasAccess = whitelist.some(function (email) {\n    return email === user.email;\n  });\n\n  if (!userHasAccess) {\n    return callback(new UnauthorizedError('Access denied.'));\n  }\n\n  callback(null, user, context);\n}",
+    "name": "Whitelist for App Rules Report Query SPA",
+    "order": 2,
+    "stage": "login_success"
+  },
 ]

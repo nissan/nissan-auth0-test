@@ -1,9 +1,9 @@
-import config from "./auth0_management_config.json";
 import {
   clientIdRegEx,
   getUniversalRules,
   getAppSpecificRules,
   getClientIDForRule,
+  getClientRuleMap
 } from "./utils";
 import { rules } from "./sampleData";
 import { apps } from "./sampleData";
@@ -159,7 +159,8 @@ it('finds the applications mentioned in an app specific rule, or reports if ther
       expect(appName).toBeTruthy();
       expect(appName.name).toEqual("demo-spa-app-1");
     }
-        if (rule.id === "rul_g5o1uXlCJncQQUvJ") {
+
+    if (rule.id === "rul_g5o1uXlCJncQQUvJ") {
       expect(appName).toBeTruthy();
       expect(appName.name).toEqual("App Rules Report Query SPA");
     }
@@ -171,10 +172,14 @@ it('finds the applications mentioned in an app specific rule, or reports if ther
   });
 });
 
+it("gives a list of applications for the tenant and the rules that apply to them explicitly", () => {
+  const clientRulesMap = getClientRuleMap(apps,rules);
+  expect(clientRulesMap).toBeTruthy();
+  //TODO: put more detailed test matching here to ensure all the rules line up to the apps in the test data
+  // Test to make sure
+});
+
 it.skip("returns the condition block that has the clientId inside a rule script", () => {
   return new Error("Not yet implemented");
 });
 
-it.skip("gives a list of applications for the tenant and the rules that apply to them explicitly", () => {
-  return new Error("Not yet implemented");
-});
