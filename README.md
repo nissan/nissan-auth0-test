@@ -1,104 +1,69 @@
-# Auth0 React SDK Sample Application
+# Auth0 React SDK Enriched AppData Sample Application
 
-This sample demonstrates the integration of [Auth0 React SDK](https://github.com/auth0/auth0-react) into a React application created using [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html). The sample is a companion to the [Auth0 React SDK Quickstart](https://auth0.com/docs/quickstart/spa/react).
+This sample demonstrates a query to the Management API that retrieves the applications and rules for a given tenant, and produces a tabular list of applications with their respective applied rules. It is based on the [Auth0 React Sample](https://github.com/auth0-samples/auth0-react-samples/)
 
-This sample demonstrates the following use cases:
+The custom features that it includes are:
 
-- [Login](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/components/NavBar.js#L72-L79)
-- [Logout](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/components/NavBar.js#L102-L108)
-- [Showing the user profile](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/views/Profile.js)
-- [Protecting routes](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/views/Profile.js#L33)
-- [Calling APIs](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/views/ExternalApi.js)
+- [App Rules Listing View Component](https://github.com/nissan/nissan-auth0-test/blob/main/src/views/AppRulesListing.js)
+- [App Rules Listing API route](https://github.com/nissan/nissan-auth0-test/blob/main/api-server.js)
+- [Custom Management API calls] (https://github.com/nissan/nissan-auth0-test/blob/main/src/custom/auth0Manager.js) and associated [test](https://github.com/nissan/nissan-auth0-test/blob/main/src/custom/auth0Manager.test.js)
+- [Custom helper utilities](https://github.com/nissan/nissan-auth0-test/blob/main/src/custom/utils.js) for processing and mapping the data returned by the management API calls and their associated [tests](https://github.com/nissan/nissan-auth0-test/blob/main/src/custom/utils.test.js)
 
 ## Project setup
 
-Use `npm` to install the project dependencies:
+1. Log on to your Auth0 tenant and create a new SPA Application. This application will be used by the solution application you will clone.
 
-```bash
-npm install
-```
+- Note the `clientId` assigned
+- If running from your *“<http://localhost:3000>”* which is the default for the code, ensure the **Allowed Callback URLs**, **Allowed Logout URLs** and **Allowed Web Origins** fields are correctly set to this value
+- If you wish to set specific connections for this application, such as you only want users with accounts on your Active Directory to be able to login to this application you can do specify via the *Connections* tab of the app to increase the security of this utility application.
 
-## Configuration
+1. Create a Rule to limit access to the application to specific users
+After creating the application, you should create a rule for the SPA application to meet the requirement that only specific users should be able to log in to this application. You can click on the Rules item in the left menu and then create a new Rule.
 
-### Create an API
+    - From the list of templates select “Whitelist for a Specific App”
+    - Inside the code for the rule, amend the line that says `context.clientName !== ‘NameOfTheAppWithWhiteList’`  to `context.clientID !== ‘<yourClientId>’` to the `clientId` noted in step 1.
+    - Amend the `whitelist` array with the list of authorised user emails for the application. Ensure to add your own email address to validate the application is running in later steps.
+    - Click **Save Changes**
 
-For the ["call an API"](https://auth0.com/docs/quickstart/spa/react/02-calling-an-api) page to work, you will need to [create an API](https://auth0.com/docs/apis) using the [management dashboard](https://manage.auth0.com/#/apis). This will give you an API identifier that you can use in the `audience` configuration field below.
+1. Create a new API by clicking on the *APIs* menu item and clicking the “Create API” button. Set the `identifier` value to a valid name and make note of the value of this field. 
 
-If you do not wish to use an API or observe the API call working, you should not specify the `audience` value in the next step. Otherwise, you will receive a "Service not found" error when trying to authenticate.
+1. When you create the new API, a new Machine to Machine application will also be created. It will be listed under the “Applications” tab with as the name of your new API  (Test Application) .
 
-### Configure credentials
+    - Open this application and note the “ClientID” and “Client Secret” values, which I will reference as “Management Client ID” and “Management Client Secret” to avoid confusion in later steps. 
+    - On the “APIs” tab of this application, ensure that the “Auth0 Management API” toggle is set to “Authorised” (green) as this will allow it to call the Management API endpoints for data related to your tenant
 
-The project needs to be configured with your Auth0 domain and client ID in order for the authentication flow to work.
+1. Clone the GitHub repo at <https://github.com/nissan/nissan-auth0-test> and open the folder inside your favourite code editor or IDE.
 
-To do this, first copy `src/auth_config.json.example` into a new file in the same folder called `src/auth_config.json`, and replace the values with your own Auth0 application credentials, and optionally the base URLs of your application and API:
+1. We need to configure the auth0 specific settings for the SPA application
 
-```json
-{
-  "domain": "{YOUR AUTH0 DOMAIN}",
-  "clientId": "{YOUR AUTH0 CLIENT ID}",
-  "audience": "{YOUR AUTH0 API_IDENTIFIER}",
-  "appOrigin": "{OPTIONAL: THE BASE URL OF YOUR APPLICATION (default: http://localhost:3000)}",
-  "apiOrigin": "{OPTIONAL: THE BASE URL OF YOUR API (default: http://localhost:3001)}"
-}
-```
+    - Create a copy of the `auth0_config.json.example` as auth0_config.json file inside the same `src` folder.
+    - Replace the “domain” setting with your target Auth0 tenant domain
+    - Replace the `clientId` setting with the `clientId` of the SPA application that was setup in step 1.
+    - Replace the `audience` setting with the `identifier` value of your application API that was configured in step 3
 
-**Note**: Do not specify a value for `audience` here if you do not wish to use the API part of the sample.
+1. We now need to configure the auth0 settings specific for accessing the Management API 
 
-## Run the sample
+    - Create a copy of the `auth0_management_config.json.example` file as `auth0_management_config.json` inside the same `src\custom` folder it is located in.
+    - Replace the `domain` setting with your target Auth0 tenant domain
+    - Replace the `clientId` setting with the `clientId` value we noted in step 4 (the “Management Client Id”)
+    - Replace the `clientSecret` setting with the `clientSecret` value we noted in step 4 (the “Management Client Secret”)
 
-### Compile and hot-reload for development
+1. To run the application, simply run `yarn install` and then `yarn start`.
 
-This compiles and serves the React app and starts the backend API server on port 3001.
+    - Login to the application.
+    - Click on the “App Rules Listing” menu item. This should use the settings specified to generate an updated listing of applications and their associated rules.
+    - Click on the “Ping API” button to validate that your connection is configured correctly and data is being returned in the “appData” field of the JSON returned. 
+    - Alternatively, you can run `yarn test` and specify the `utils.test.js` and `auth0Manager.test.js` files to test the custom functions added are working as expected.
 
-```bash
-npm run dev
-```
+It may also help to reference the original sample's [README](https://github.com/auth0-samples/auth0-react-samples/blob/master/README.md) for other instructions, help and support options and other additional information about the building block application
 
-## Deployment
+## Modification Author
 
-### Compiles and minifies for production
-
-```bash
-npm run build
-```
-
-### Docker build
-
-To build and run the Docker image, run `exec.sh`, or `exec.ps1` on Windows.
-
-### Run your tests
-
-```bash
-npm run test
-```
-
-## Frequently Asked Questions
-
-We are compiling a list of questions and answers regarding the new JavaScript SDK - if you're having issues running the sample applications, [check the FAQ](https://github.com/auth0/auth0-spa-js/blob/master/FAQ.md)!
-
-## What is Auth0?
-
-Auth0 helps you to:
-
-- Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-- Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
-- Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
-- Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
-- Analytics of how, when and where users are logging in.
-- Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
-
-## Create a Free Auth0 Account
-
-1. Go to [Auth0](https://auth0.com/signup) and click Sign Up.
-2. Use Google, GitHub or Microsoft Account to login.
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-## Author
+[Nissan Dookeran](https://github.com/nissan)
+## Original Author
 
 [Auth0](https://auth0.com)
+
 
 ## License
 
