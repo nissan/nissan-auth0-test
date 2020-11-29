@@ -1,7 +1,6 @@
-import {ManagementClient} from 'auth0';
+const getAppsAndRulesFromManagementAPI = async (domain, clientId, clientSecret) =>{
 
-export const getAppsAndRulesFromManagementAPI = async (domain, clientId, clientSecret) =>{
-
+  var ManagementClient = require('auth0').ManagementClient;
   var auth0 = new ManagementClient({
     domain,
     clientId,
@@ -9,9 +8,9 @@ export const getAppsAndRulesFromManagementAPI = async (domain, clientId, clientS
     // scope: 'read:applications read:rules'
   });
 
-  const apps = auth0.getClients();
-  const rules = auth0.getRules();
+  const apps = await auth0.getClients();
+  const rules = await auth0.getRules();
   return [apps,rules];
-
-
 }
+
+exports.getAppsAndRulesFromManagementAPI = getAppsAndRulesFromManagementAPI;

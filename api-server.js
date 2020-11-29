@@ -1,3 +1,4 @@
+const managementApi = require("./src/custom/getAppsAndRulesFromManagementAPI");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -5,6 +6,7 @@ const helmet = require("helmet");
 const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 const authConfig = require("./src/auth_config.json");
+const managementConfig = require("./src/custom/auth0_management_config.json");
 
 const app = express();
 
@@ -41,9 +43,16 @@ app.get("/api/external", checkJwt, (req, res) => {
   });
 });
 
-app.get("/api/apprules", checkJwt, (req, res) => {
+app.get("/api/apprules", checkJwt, async (req, res) => {
+  const appData = await managementApi.getAppsAndRulesFromManagementAPI(
+    managementConfig.domain,
+    managementConfig.clientId,
+    managementConfig.clientSecret
+  )
   res.send({
-    msg: "Your access token was successfully validated for the app rules listing!"
+    msg: "Your access token was successfully validated for the app rules listing!",
+    config: managementConfig,
+    appData
   });
 });
 
