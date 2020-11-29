@@ -263,7 +263,7 @@ export const rules = [
   {
     "id": "rul_vTZKpI3b7lGAHu53",
     "enabled": true,
-    "script": "function accessOnWeekdaysOnly(user, context, callback) {\n  if (context.clientID === 'T2WqEi1RSNB511AJlkoDWvXEZWtG2GAnN') {\n    const date = new Date();\n    const d = date.getDay();\n\n    if (d === 0 || d === 6) {\n      return callback(\n        new UnauthorizedError('This app is available during the week')\n      );\n    }\n  }\n\n  callback(null, user, context);\n}",
+    "script": "function accessOnWeekdaysOnly(user, context, callback) {\n  if (context.clientID === '2WqEi1RSNB511AJlkoDWvXEZWtG2GAnN') {\n    const date = new Date();\n    const d = date.getDay();\n\n    if (d === 0 || d === 6) {\n      return callback(\n        new UnauthorizedError('This app is available during the week')\n      );\n    }\n  }\n\n  callback(null, user, context);\n}",
     "name": "Allow Access during weekdays for demo-spa-app-1",
     "order": 3,
     "stage": "login_success"

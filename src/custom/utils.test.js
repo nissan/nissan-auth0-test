@@ -1,7 +1,12 @@
 import config from "./auth0_management_config.json";
-import { clientIdRegEx, getUniversalRules, getAppSpecificRules } from "./utils";
-import {rules} from "./sampleData";
-import {apps} from "./sampleData";
+import {
+  clientIdRegEx,
+  getUniversalRules,
+  getAppSpecificRules,
+  getClientIDForRule,
+} from "./utils";
+import { rules } from "./sampleData";
+import { apps } from "./sampleData";
 
 it("should not find a clientID in code", () => {
   const sampleUniversalRule = {
@@ -79,19 +84,16 @@ it("identifies rules as universal", () => {
       name: "Whitelist for App Rules Report Query SPA",
     },
   ];
-  const notExpectedUniversalRules = [
-    {
-      id: "rul_k8v3tfAPScpR4wb3",
-      name: "Add email to access token",
-      enabled: true,
-    },
-  ];
-  const universalRules = getUniversalRules(testRules);
-  const allFound = universalRules.every(rule => expectedUniversalRules.includes(rule));
-  const foundAppSpecific = universalRules.every(rule => notExpectedAppSpecificRules.includes(rule));
-  expect(allFound)
-  expect(!foundAppSpecific);
 
+  const universalRules = getUniversalRules(testRules);
+  const allFound = universalRules.every((rule) =>
+    expectedUniversalRules.includes(rule)
+  );
+  const foundAppSpecific = universalRules.every((rule) =>
+    notExpectedAppSpecificRules.includes(rule)
+  );
+  expect(allFound);
+  expect(!foundAppSpecific);
 });
 
 it("identifies rules as app specific", () => {
@@ -122,23 +124,56 @@ it("identifies rules as app specific", () => {
     },
   ];
   const appSpecificRules = getAppSpecificRules(testRules);
-  const allFound = appSpecificRules.every(rule => expectedAppSpecificRules.includes(rule));
-  const foundUniversal = appSpecificRules.every(rule => notExpectedUniversalRules.includes(rule));
-  expect(allFound)
+  const allFound = appSpecificRules.every((rule) =>
+    expectedAppSpecificRules.includes(rule)
+  );
+  const foundUniversal = appSpecificRules.every((rule) =>
+    notExpectedUniversalRules.includes(rule)
+  );
+  expect(allFound);
   expect(!foundUniversal);
-//  expect(appSpecificRules).toEqual(expectedAppSpecificRules)
+  //  expect(appSpecificRules).toEqual(expectedAppSpecificRules)
 });
 
-it.skip('finds the applications mentioned in a rule, or "None Specified" if the rule has no conditionals', () => {
-  return new Error("Not yet implemented");
+it('finds the applications mentioned in an app specific rule, or reports if there is no matching applicaiton', () => {
+  const testApps = apps;
+  const testRules = rules;
+  const appSpecificRules = getAppSpecificRules(testRules);
+  appSpecificRules.forEach((rule) => {
+    const clientId = getClientIDForRule(rule);
+    expect(clientId).toBeTruthy();
+    const appName = testApps.find(
+      (app) => app.client_id.localeCompare(clientId) === 0
+    );
+    if (rule.id === "rul_G2ryoz3q3ivGcFIU") {
+      expect(appName).toBeTruthy();
+      expect(appName.name).toEqual("demo-native-app-1");
+    }
+
+    // Nice learning here
+    // I made a typo with the test data initially so the id of 2WqEi1RSNB511AJlkoDWvXEZWtG2GAnN no longer matched
+    // the rule code's clientID T2WqEi1RSNB511AJlkoDWvXEZWtG2GAnN, so nice to have should be to report unmatched clientIds in rules
+    // as this could happen if someone deletes an app and recreates it with the same name but are matching on IDs
+
+    if (rule.id === "rul_vTZKpI3b7lGAHu53") {
+      expect(appName).toBeTruthy();
+      expect(appName.name).toEqual("demo-spa-app-1");
+    }
+        if (rule.id === "rul_g5o1uXlCJncQQUvJ") {
+      expect(appName).toBeTruthy();
+      expect(appName.name).toEqual("App Rules Report Query SPA");
+    }
+    if (!appName) {
+      console.log(
+        `Rule "${rule.id} : ${rule.name}" has no matches for applications, but has a clientID of ${clientId}`
+      );
+    }
+  });
 });
-
-
 
 it.skip("returns the condition block that has the clientId inside a rule script", () => {
   return new Error("Not yet implemented");
 });
-
 
 it.skip("gives a list of applications for the tenant and the rules that apply to them explicitly", () => {
   return new Error("Not yet implemented");
