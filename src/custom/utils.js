@@ -1,12 +1,12 @@
-export const clientIdRegEx = /context.clientID(.*?)/g;
+const clientIdRegEx = /context.clientID(.*?)/g;
 
-export const clientIdRegExLineOfCode = /.*context.clientID.*/g;
+const clientIdRegExLineOfCode = /.*context.clientID.*/g;
 
-export const wordInQuotesRegEx = /'(.*?)'/g;
+const wordInQuotesRegEx = /'(.*?)'/g;
 
-export const removeSingleQuotes = (text) => text.replace(/'/g, "");
+const removeSingleQuotes = (text) => text.replace(/'/g, "");
 
-export const getUniversalRules = (rules) => {
+const getUniversalRules = (rules) => {
   if (!rules) return {};
   const matches = [];
   rules.forEach((rule) => {
@@ -17,7 +17,7 @@ export const getUniversalRules = (rules) => {
   return matches;
 };
 
-export const getAppSpecificRules = (rules) => {
+const getAppSpecificRules = (rules) => {
   if (!rules) return {};
   const matches = [];
   rules.forEach((rule) => {
@@ -28,7 +28,7 @@ export const getAppSpecificRules = (rules) => {
   return matches;
 };
 
-export const getClientIDForRule = (rule) => {
+const getClientIDForRule = (rule) => {
   // Assumption: There is only a maximumum of one clientID matching to every rule.
   const { script } = rule;
   const matches = script.match(clientIdRegExLineOfCode);
@@ -47,7 +47,7 @@ export const getClientIDForRule = (rule) => {
   return removeSingleQuotes(matchedClientID[0]);
 };
 
-export const getClientRuleMap = (apps, rules) => {
+const getClientRuleMap = (apps, rules) => {
   // Assumption: There is only a maximumum of one clientId matching to every rule.
   const appRules = apps.map((app) => {
     app.rules = [];
@@ -55,7 +55,7 @@ export const getClientRuleMap = (apps, rules) => {
   });
 
   const appSpecificRules = getAppSpecificRules(rules);
-  const universalRules = getUniversalRules(rules);
+  
 
   appSpecificRules.forEach((rule) => {
     const clientId = getClientIDForRule(rule);
@@ -64,20 +64,30 @@ export const getClientRuleMap = (apps, rules) => {
     );
 
     if (matchingApp) {
-      const newRules = Object.assign([], ...matchingApp.rules,rule);
-      matchingApp.rules = newRules;
+      const newRule = {id:rule.id, name:rule.name, enabled:rule.enabled, script:rule.script};
+      matchingApp.rules.push(newRule);
     }
   });
 
+  const universalRules = getUniversalRules(rules);
   universalRules.forEach((rule) => {
     appRules.map((app) => {
       if (app.name.localeCompare("All Applications") === 0) {
-        const newRules = Object.assign([], ...app.rules, rule);
-        app.rules = newRules;
+        const newRule = {id:rule.id, name:rule.name, enabled:rule.enabled, script:rule.script};
+        app.rules.push(newRule);
       }
       return app;
     });
   });
-  console.log(appRules);
   return appRules;
 };
+
+exports.clientIdRegEx = clientIdRegEx;
+exports.clientIdRegExLineOfCode = clientIdRegExLineOfCode;
+exports.wordInQuotesRegEx = wordInQuotesRegEx;
+exports.removeSingleQuotes = removeSingleQuotes;
+exports.getUniversalRules = getUniversalRules;
+exports.getAppSpecificRules = getAppSpecificRules;
+exports.getClientIDForRule = getClientIDForRule;
+
+exports.getClientRuleMap = getClientRuleMap;

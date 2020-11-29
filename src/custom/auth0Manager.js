@@ -1,3 +1,5 @@
+const { getClientRuleMap } = require('./utils');
+
 const getAppsAndRulesFromManagementAPI = async (domain, clientId, clientSecret) =>{
 
   var ManagementClient = require('auth0').ManagementClient;
@@ -10,7 +12,8 @@ const getAppsAndRulesFromManagementAPI = async (domain, clientId, clientSecret) 
 
   const apps = await auth0.getClients();
   const rules = await auth0.getRules();
-  return [apps,rules];
+  const enrichedApps = await getClientRuleMap(apps, rules);
+  return enrichedApps;
 }
 
 exports.getAppsAndRulesFromManagementAPI = getAppsAndRulesFromManagementAPI;

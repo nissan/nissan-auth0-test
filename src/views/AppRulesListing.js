@@ -98,6 +98,7 @@ export const AppRulesListingComponent = () => {
       {
         col1: "App3",
         col2: "Rule1, Rule2",
+        disabledRule: "Rule 9"
       },
     ],
     []
@@ -109,9 +110,13 @@ export const AppRulesListingComponent = () => {
         accessor: "col1", // accessor is the "key" in the data
       },
       {
-        Header: "Rules Applied",
+        Header: "Enabled Rules Applied",
         accessor: "col2",
       },
+      {
+        Header: "Disabled Rules Applied",
+        accessor: "disabledRule"
+      }
     ],
     []
   );
@@ -154,21 +159,12 @@ export const AppRulesListingComponent = () => {
 
         <h1>App Rules Listing</h1>
         <p>Show the List of Registered Apps and their associated Rules</p>
-
-        <Button color="primary" className="mt-5" onClick={callApi}>
-          Ping API
-        </Button>
-      </div>
-
-      <div className="result-block-container">
-        {state.showResult && (
-          <div className="result-block" data-testid="api-result">
-            <h6 className="muted">Result</h6>
-            <Highlight>
-              <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
-            </Highlight>
-            {/* apply the table props */}
-            <table {...getTableProps()}>
+<div className="result-block-container">
+  {!state.showResult && (<div><Button color="primary" className="mt-5" onClick={callApi}>
+          Show Data
+        </Button></div>)}
+  {/* apply the table props */}
+  <table {...getTableProps()}>
               <thead>
                 {
                   // Loop over the header rows
@@ -221,6 +217,20 @@ export const AppRulesListingComponent = () => {
                 }
               </tbody>
             </table>
+</div>
+        <Button color="primary" className="mt-5" onClick={callApi}>
+          Ping API
+        </Button>
+      </div>
+
+      <div className="result-block-container">
+        {state.showResult && (
+          <div className="result-block" data-testid="api-result">
+            <h6 className="muted">Result</h6>
+            <Highlight>
+              <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
+            </Highlight>
+            
           </div>
         )}
       </div>

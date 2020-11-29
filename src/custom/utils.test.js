@@ -176,7 +176,7 @@ it("gives a list of applications for the tenant and the rules that apply to them
   const clientRulesMap = getClientRuleMap(apps,rules);
   expect(clientRulesMap).toBeTruthy();
   //TODO: put more detailed test matching here to ensure all the rules line up to the apps in the test data
-  // Test to make sure
+  // 
 });
 
 it.skip("returns the condition block that has the clientId inside a rule script", () => {
