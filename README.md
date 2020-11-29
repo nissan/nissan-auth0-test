@@ -52,7 +52,7 @@ After creating the application, you should create a rule for the SPA application
 
     - Login to the application.
     - Click on the “App Rules Listing” menu item. This should use the settings specified to generate an updated listing of applications and their associated rules.
-    - Click on the “Ping API” button to validate that your connection is configured correctly and data is being returned in the “appData” field of the JSON returned. 
+    - Click on the “Show API Return Data” button to validate that your connection is configured correctly and data is being returned as expected in the “appData” field of the JSON returned. 
     - Alternatively, you can run `yarn test` and specify the `utils.test.js` and `auth0Manager.test.js` files to test the custom functions added are working as expected.
 
 It may also help to reference the original sample's [README](https://github.com/auth0-samples/auth0-react-samples/blob/master/README.md) for other instructions, help and support options and other additional information about the building block application

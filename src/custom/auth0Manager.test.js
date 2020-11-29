@@ -28,7 +28,8 @@ it('has the id, name, enabled and script for each rule returned from the managem
             expect(rule.id).toBeTruthy();
             expect(rule.name).toBeTruthy();
             expect(rule.script).toBeTruthy();
-            expect(rule.enabled).toBeTruthy();
+            expect(rule.enabled).not.toEqual(null);
+            expect(rule.enabled).not.toEqual(undefined);
         })
     })
     

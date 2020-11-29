@@ -98,7 +98,7 @@ export const AppRulesListingComponent = () => {
       {
         col1: "App3",
         col2: "Rule1, Rule2",
-        disabledRule: "Rule 9"
+        disabledRule: "Rule 9",
       },
     ],
     []
@@ -115,8 +115,8 @@ export const AppRulesListingComponent = () => {
       },
       {
         Header: "Disabled Rules Applied",
-        accessor: "disabledRule"
-      }
+        accessor: "disabledRule",
+      },
     ],
     []
   );
@@ -159,81 +159,114 @@ export const AppRulesListingComponent = () => {
 
         <h1>App Rules Listing</h1>
         <p>Show the List of Registered Apps and their associated Rules</p>
-<div className="result-block-container">
-  {!state.showResult && (<div><Button color="primary" className="mt-5" onClick={callApi}>
-          Show Data
-        </Button></div>)}
-  {/* apply the table props */}
-  <table {...getTableProps()}>
-              <thead>
-                {
-                  // Loop over the header rows
-                  headerGroups.map((headerGroup) => (
-                    // Apply the header row props
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                      {
-                        // Loop over the headers in each row
-                        headerGroup.headers.map((column) => (
-                          // Apply the header cell props
-                          <th {...column.getHeaderProps()}>
-                            {
-                              // Render the header
-                              column.render("Header")
+        <div className="result-block-container">
+          {!state.showResult && (
+            <div>
+              <Button color="primary" className="mt-5" onClick={callApi}>
+                Show Data
+              </Button>
+            </div>
+          )}
+          {state.showResult && (
+            <>
+              <div>
+                <Button color="primary" className="mt-5" onClick={callApi}>
+                  Refresh Data
+                </Button>
+              </div>
+              <table
+                style={{
+                  borderCollapse: "collapse",
+                  margin: "25px 0",
+                  fontSize: "0.9em",
+                  fontFamily: "sans-serif",
+                  minWidth: "400px",
+                  boxShadow: "0 0 20px rgba(0, 0, 0, 0.15)",
+                }}
+              >
+                <thead>
+                  <tr
+                    style={{
+                      backgroundColor: "#980000",
+                      color: "#ffffff",
+                      textAlign: "left",
+                    }}
+                  >
+                    <th style={{ padding: "12px 15px" }}>App Name</th>
+                    <th style={{ padding: "12px 15px" }}>Applied Rules</th>
+                    <th style={{ padding: "12px 15px" }}>Disabled Rules</th>
+                  </tr>
+                </thead>
+                {state.apiMessage.appData.map((app) => (
+                  <tbody>
+                    <tr
+                      style={
+                        app.name === "All Applications"
+                          ? {
+                              borderBottom: "1px solid #dddddd",
+                              backgroundColor: "green",
                             }
-                          </th>
-                        ))
+                          : { borderBottom: "1px solid #dddddd" }
                       }
+                    >
+                      <td>
+                        {app.name === "All Applications" ? (
+                          <span style={{ fontWeight: "bold" }}>{app.name}</span>
+                        ) : (
+                          app.name
+                        )}
+                      </td>
+                      <td>
+                        <ul>
+                          {app.rules.map(
+                            (rule) =>
+                              rule.enabled && (
+                                <li style={{ listStyle: "disc" }}>
+                                  {rule.name}
+                                </li>
+                              )
+                          )}
+                        </ul>
+                      </td>
+                      <td>
+                        <ul>
+                          {app.rules.map(
+                            (rule) =>
+                              !rule.enabled && (
+                                <li style={{ listStyle: "disc" }}>
+                                  {rule.name}
+                                </li>
+                              )
+                          )}
+                        </ul>
+                      </td>
                     </tr>
-                  ))
-                }
-              </thead>
-              {/* Apply the table body props */}
-              <tbody {...getTableBodyProps()}>
-                {
-                  // Loop over the table rows
-                  rows.map((row) => {
-                    // Prepare the row for display
-                    prepareRow(row);
-                    return (
-                      // Apply the row props
-                      <tr {...row.getRowProps()}>
-                        {
-                          // Loop over the rows cells
-                          row.cells.map((cell) => {
-                            // Apply the cell props
-                            return (
-                              <td {...cell.getCellProps()}>
-                                {
-                                  // Render the cell contents
-                                  cell.render("Cell")
-                                }
-                              </td>
-                            );
-                          })
-                        }
-                      </tr>
-                    );
-                  })
-                }
-              </tbody>
-            </table>
-</div>
-        <Button color="primary" className="mt-5" onClick={callApi}>
-          Ping API
+                  </tbody>
+                ))}
+              </table>
+            </>
+          )}
+        </div>
+        <Button
+          color="primary"
+          className="mt-5"
+          onClick={() => setState({ ...state, debug: true })}
+        >
+          Show API Return Data
         </Button>
       </div>
-
-      <div className="result-block-container">
-        {state.showResult && (
-          <div className="result-block" data-testid="api-result">
-            <h6 className="muted">Result</h6>
-            <Highlight>
-              <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
-            </Highlight>
-            
-          </div>
-        )}
-      </div>
+      {state.debug && (
+        <div className="result-block-container">
+          {state.showResult && (
+            <div className="result-block" data-testid="api-result">
+              <h6 className="muted">Result</h6>
+              <Highlight>
+                <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
+              </Highlight>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };
