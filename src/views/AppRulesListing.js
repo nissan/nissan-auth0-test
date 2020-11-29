@@ -4,7 +4,6 @@ import Highlight from "../components/Highlight";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import config from "../auth_config.json";
 import Loading from "../components/Loading";
-import { useTable, useSortBy } from "react-table";
 
 const { apiOrigin = "http://localhost:3001" } = config;
 
@@ -84,50 +83,6 @@ export const AppRulesListingComponent = () => {
     e.preventDefault();
     fn();
   };
-
-  const data = React.useMemo(
-    () => [
-      {
-        col1: "App1",
-        col2: "Rule1",
-      },
-      {
-        col1: "App2",
-        col2: "",
-      },
-      {
-        col1: "App3",
-        col2: "Rule1, Rule2",
-        disabledRule: "Rule 9",
-      },
-    ],
-    []
-  );
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: "Application Name",
-        accessor: "col1", // accessor is the "key" in the data
-      },
-      {
-        Header: "Enabled Rules Applied",
-        accessor: "col2",
-      },
-      {
-        Header: "Disabled Rules Applied",
-        accessor: "disabledRule",
-      },
-    ],
-    []
-  );
-  const tableInstance = useTable({ columns, data }, useSortBy);
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = tableInstance;
   return (
     <>
       <div className="mb-5">
@@ -187,7 +142,7 @@ export const AppRulesListingComponent = () => {
                 <thead>
                   <tr
                     style={{
-                      backgroundColor: "#980000",
+                      backgroundColor: "#000000",
                       color: "#ffffff",
                       textAlign: "left",
                     }}
@@ -205,6 +160,7 @@ export const AppRulesListingComponent = () => {
                           ? {
                               borderBottom: "1px solid #dddddd",
                               backgroundColor: "green",
+                              color:"white"
                             }
                           : { borderBottom: "1px solid #dddddd" }
                       }
@@ -217,28 +173,50 @@ export const AppRulesListingComponent = () => {
                         )}
                       </td>
                       <td>
-                        <ul>
-                          {app.rules.map(
-                            (rule) =>
-                              rule.enabled && (
-                                <li style={{ listStyle: "disc" }}>
-                                  {rule.name}
-                                </li>
-                              )
-                          )}
-                        </ul>
+                        {app.rules.length > 0 ? (
+                          <ul>
+                            {app.rules.map(
+                              (rule) =>
+                                rule.enabled && (
+                                  <li style={{ listStyle: "disc" }}>
+                                    {rule.name}
+                                  </li>
+                                )
+                            )}
+                          </ul>
+                        ) : (
+                          <span
+                            style={{
+                              color: "#00DD00",
+                              backgroundColor: "#000",
+                            }}
+                          >
+                            No Rules Detected
+                          </span>
+                        )}
                       </td>
                       <td>
-                        <ul>
-                          {app.rules.map(
-                            (rule) =>
-                              !rule.enabled && (
-                                <li style={{ listStyle: "disc" }}>
-                                  {rule.name}
-                                </li>
-                              )
-                          )}
-                        </ul>
+                        {app.rules.length > 0 ? (
+                          <ul>
+                            {app.rules.map(
+                              (rule) =>
+                                !rule.enabled && (
+                                  <li style={{ listStyle: "disc" }}>
+                                    {rule.name}
+                                  </li>
+                                )
+                            )}
+                          </ul>
+                        ) : (
+                          <span
+                            style={{
+                              color: "#00DD00",
+                              backgroundColor: "#000",
+                            }}
+                          >
+                            No Rules Detected
+                          </span>
+                        )}
                       </td>
                     </tr>
                   </tbody>
