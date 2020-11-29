@@ -1,4 +1,4 @@
-const managementApi = require("./src/custom/getAppsAndRulesFromManagementAPI");
+const managementApi = require("./src/custom/auth0Manager");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
