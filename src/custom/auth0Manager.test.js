@@ -25,14 +25,5 @@ it('has the id, name, enabled and script for each rule returned from the managem
     })
 })
 
-it('finds the applications mentioned in a rule',()=>{
-    return new Error('Not yet implemented')
-})
 
-it('gets a list of applications and the rules that apply to them explicitly', ()=>{
-    return new Error('Not yet implemented')
-})
 
-it ('should give me the condition statement including the clientId', () => {
-    return new Error('Not yet implemented')
-});
